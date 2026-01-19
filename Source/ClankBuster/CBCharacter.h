@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* SlideAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* FireAction;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -79,8 +82,37 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation|idle")
 	UAnimBlueprint* CharacterMeshDefaultAnim;
-
 	//----------------------------//
+
+
+	//Dash config:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement|Dash")
+	float DashImpulse = 2000.f; //force of dashing(the distance covered in a dash)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement|Dash")
+	float DashAirLaunch = 200.f; //little upward force when dashing on ground
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement|Dash")
+	float DashCooldownTime = 2.f;
+
+	bool bCanDash = true;
+	FTimerHandle DashTimerHandle; //timer handle for dash cooldown
+
+
+	//Slide config:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement|Slide")
+	float SlideSpeed = 1500.f;
+	
+
+	//Weapon config:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Weapon")
+	float WeaponRange = 5000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Weapon")
+	float WeaponDamage = 10.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Weapon")
+	float RecoilForce = 0.5f;  //kickback angle for camera.
 
 
 protected:
@@ -89,34 +121,15 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
-	//---------DASH---------//
-	//Dash config:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement|Dash")
-	float DashImpulse = 2000.f; //force of dashing(the distance covered in a dash)
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement|Dash")
-	float DashAirLaunch = 200.f; //little upward force when dashing on ground
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement|Dash")
-	float DashCooldownTime = 2.f;
-
-	bool bCanDash = true;
-	FTimerHandle DashTimerHandle; //timer handle for dash cooldown
-
 	//Dash callbacks:
 	void Dash();
 	void ResetDash();
-	//----------------------//
 
-
-	//---------SLIDE---------//
-	//Slide config:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement|Slide")
-	float SlideSpeed = 1500.f;
-	
 	//Slide callbacks:
 	void StartSlide();
 	void StopSlide();
-	//-----------------------//
+
+	//Fire weapon callback:
+	void FireWeapon();
 
 };

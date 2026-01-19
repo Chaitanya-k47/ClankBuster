@@ -12,6 +12,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
+#include "DamageableInterface.h"
+#include "DrawDebugHelpers.h"
+
 
 // Sets default values
 ACBCharacter::ACBCharacter()
@@ -80,7 +83,7 @@ void ACBCharacter::BeginPlay()
 	//set default animation:
 	FirstPersonMeshComponent->SetAnimInstanceClass(FirstPersonDefaultAnim->GeneratedClass);
 	GetMesh()->SetAnimInstanceClass(CharacterMeshDefaultAnim->GeneratedClass);
-	
+
 	//hide head bone:
 	//GetMesh()->HideBoneByName(TEXT("head"), EPhysBodyOp::PBO_None);	
 }
@@ -114,6 +117,9 @@ void ACBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		//bind slide using callbacks
 		EnhancedInputComponent->BindAction(SlideAction, ETriggerEvent::Started, this, &ACBCharacter::StartSlide);
 		EnhancedInputComponent->BindAction(SlideAction, ETriggerEvent::Completed, this, &ACBCharacter::StopSlide);
+
+		//bind fire using callback
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ACBCharacter::FireWeapon);
 
 	}
 }
@@ -209,5 +215,40 @@ void ACBCharacter::StopSlide()
 	//reset friction and deceleration to default UE values.
 	GetCharacterMovement()->GroundFriction = 8.0f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2048.0f;
+}
+
+void ACBCharacter::FireWeapon()
+{
+	if(!FirstPersonCameraComponent) return;
+
+	FVector Start = FirstPersonCameraComponent->GetComponentLocation();
+	FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
+	FVector End = Start + (ForwardVector * WeaponRange);
+
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this); //do not shoot yourself
+
+	//line trace
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		Start,
+		End,
+		ECC_Visibility, //standard vision channel
+		QueryParams
+	);
+
+	//debug line
+	DrawDebugLine(
+		GetWorld(),
+		Start,
+		(bHit ? HitResult.Location : End),
+		FColor::Red,
+		false,
+		2.0f,
+		0, 
+		1.0f
+	);
+
 }
 
