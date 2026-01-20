@@ -250,5 +250,21 @@ void ACBCharacter::FireWeapon()
 		1.0f
 	);
 
+	//interface check
+	if(bHit && HitResult.GetActor())
+	{
+		//check if the actor that got hit implements the DamageableInterface.
+		if(HitResult.GetActor()->GetClass()->ImplementsInterface(UDamageableInterface::StaticClass()))
+		{
+			IDamageableInterface* DamageableActor = Cast<IDamageableInterface>(HitResult.GetActor());
+			if(DamageableActor)
+			{
+				DamageableActor->ReactToHit(WeaponDamage);
+			}
+		}
+	}
+
+	//apply recoil to camera:
+	AddControllerPitchInput(-RecoilForce);
 }
 
