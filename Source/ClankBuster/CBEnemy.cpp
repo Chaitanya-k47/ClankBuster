@@ -30,9 +30,25 @@ void ACBEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CurrentHealth = MaxHealth;
-	GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
+	//initialize stats
+	ResetEnemy();
 	
+}
+
+void ACBEnemy::ResetEnemy()
+{
+	CurrentHealth = MaxHealth;
+	bIsDead = false;
+	
+	//reset physics and collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
+	GetMesh()->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
+	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+	
+	GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
 }
 
 void ACBEnemy::ReactToHit(float DamageAmount)
@@ -40,7 +56,7 @@ void ACBEnemy::ReactToHit(float DamageAmount)
 	if(bIsDead) return;
 
 	CurrentHealth -=DamageAmount;
-	OnHit(DamageAmount);
+	OnHit(DamageAmount); //triggers bp logic first then c++ default
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("Ouch! Health: %f"), CurrentHealth));
 	if(CurrentHealth <= 0.f)
@@ -52,22 +68,27 @@ void ACBEnemy::ReactToHit(float DamageAmount)
 void ACBEnemy::Die()
 {
 	if(bIsDead) return;
-
 	bIsDead = true;
-	OnDeath();
+	
+	OnDeath(); //triggers bp logic first then c++ default
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DetachFromControllerPendingDestroy();
-	SetLifeSpan(0.1f);
+	SetLifeSpan(3.0f);
 }
 
-void ACBEnemy::OnHit(float DamageAmount)
+void ACBEnemy::OnHit_Implementation(float DamageAmount)
 {
-	//base hit reaction
+	
 }
 
-void ACBEnemy::OnDeath()
+void ACBEnemy::OnDeath_Implementation()
 {
-	//base death behavior
-}
+	//disable capsule collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	//enable ragdoll
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	GetMesh()->SetSimulatePhysics(true);
+
+	//add shot impulse
+}

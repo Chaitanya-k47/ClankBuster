@@ -38,14 +38,21 @@ protected:
 	//helper to handle death:
 	virtual void Die();
 
-	//----- HOOKS FOR VARIANTS -----
-	virtual void OnHit(float DamageAmount);
-	virtual void OnDeath();
+	//----- HYBRID HOOKS FOR VARIANTS -----
+	UFUNCTION(BlueprintNativeEvent, Category = "Combat")
+	void OnHit(float DamageAmount); //blueprint overridable
+	virtual void OnHit_Implementation(float DamageAmount); //C++ default implementation
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Combat")
+	void OnDeath(); //blueprint overridable
+	virtual void OnDeath_Implementation(); //C++ default implementation
 
 private:
 	bool bIsDead = false;
 
 public:
-
+	//----- POOLING -----
+	//to reset enemy state without spawing a new one
+	virtual void ResetEnemy();
 
 };
