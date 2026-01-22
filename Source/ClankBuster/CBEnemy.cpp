@@ -51,14 +51,15 @@ void ACBEnemy::ResetEnemy()
 	GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
 }
 
-void ACBEnemy::ReactToHit(float DamageAmount)
+void ACBEnemy::ReactToHit(float DamageAmount, const FVector& HitImpulse)
 {
 	if(bIsDead) return;
-
 	CurrentHealth -=DamageAmount;
+	LastHitImpulse = HitImpulse;
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("Ouch! Health: %f"), CurrentHealth));
+	
 	OnHit(DamageAmount); //triggers bp logic first then c++ default
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, FString::Printf(TEXT("Ouch! Health: %f"), CurrentHealth));
 	if(CurrentHealth <= 0.f)
 	{
 		Die();
@@ -91,4 +92,5 @@ void ACBEnemy::OnDeath_Implementation()
 	GetMesh()->SetSimulatePhysics(true);
 
 	//add shot impulse
+	GetMesh()->AddImpulse(LastHitImpulse, NAME_None, true);
 }

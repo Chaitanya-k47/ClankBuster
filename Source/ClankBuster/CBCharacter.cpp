@@ -259,7 +259,7 @@ void ACBCharacter::FireWeapon()
 			IDamageableInterface* DamageableActor = Cast<IDamageableInterface>(HitResult.GetActor());
 			if(DamageableActor)
 			{
-				DamageableActor->ReactToHit(WeaponDamage);
+				DamageableActor->ReactToHit(WeaponDamage, ForwardVector * ShotImpulse);
 			}
 		}
 	}

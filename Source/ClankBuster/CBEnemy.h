@@ -33,7 +33,7 @@ protected:
 
 	//----- DAMAGE HANDLING ----- 
 	//Interface implementation:
-	virtual void ReactToHit(float DamageAmount) override;
+	virtual void ReactToHit(float DamageAmount, const FVector& HitImpulse) override;
 
 	//helper to handle death:
 	virtual void Die();
@@ -49,6 +49,7 @@ protected:
 
 private:
 	bool bIsDead = false;
+	FVector LastHitImpulse;
 
 public:
 	//----- POOLING -----

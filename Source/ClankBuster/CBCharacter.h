@@ -112,6 +112,9 @@ public:
 	float WeaponDamage = 25.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Weapon")
+	float ShotImpulse = 5000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Weapon")
 	float RecoilForce = 0.5f;  //kickback angle for camera.
 
 
