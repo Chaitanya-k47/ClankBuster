@@ -13,6 +13,7 @@
 #include "EnhancedInputSubsystems.h"
 
 #include "DamageableInterface.h"
+#include "CBWeapon.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -25,32 +26,8 @@ ACBCharacter::ACBCharacter()
 	//create a first person camera:
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	check(FirstPersonCameraComponent != nullptr);
-
-	//create first person mesh:
-	FirstPersonMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FirstPersonMesh"));
-	check(FirstPersonMeshComponent != nullptr);
-
-	//attach first person mesh to the character's third-person skeletal mesh:
-	FirstPersonMeshComponent->SetupAttachment(GetMesh());
-
-	//include the first person mesh in first person rendering:
-	FirstPersonMeshComponent->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::FirstPerson;
-
-	//only the owning player should see the first person mesh:
-	//FirstPersonMeshComponent->SetOnlyOwnerSee(true); migrate to beginplay()
-
-	//Set the first person mesh to not collide with other objects:
-	FirstPersonMeshComponent->SetCollisionProfileName(FName("NoCollision"));
-
-	//owning player doesnt see the third-person character mesh but it must cast a shadow:
-	GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation;
-
-	//attach first person camera to head bone of first person mesh:
-	FirstPersonCameraComponent->SetupAttachment(FirstPersonMeshComponent, FName("head_Socket"));
-
-	//set first person camera's relative location and rotation:
+	FirstPersonCameraComponent->SetupAttachment(GetMesh(), FName("headSocket"));
 	FirstPersonCameraComponent->SetRelativeLocationAndRotation(FirstPersonCameraOffset, FRotator(0.0f, 90.f, -90.f));
-	
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	//enable fp rendering on camera and set default FOV and scale values:
@@ -77,15 +54,23 @@ void ACBCharacter::BeginPlay()
 		}
 	}
 
-	//only the owning player should see the first person mesh:
-	FirstPersonMeshComponent->SetOnlyOwnerSee(true);
+	//weapon spawning:
+	for(const TSubclassOf<ACBWeapon>& WeaponClass : DefaultWeaponClasses)
+	{
+		if(!WeaponClass) continue;
 
-	//set default animation:
-	FirstPersonMeshComponent->SetAnimInstanceClass(FirstPersonDefaultAnim->GeneratedClass);
-	GetMesh()->SetAnimInstanceClass(CharacterMeshDefaultAnim->GeneratedClass);
+		FActorSpawnParameters Params;
+		Params.Owner = this;
 
-	//hide head bone:
-	//GetMesh()->HideBoneByName(TEXT("head"), EPhysBodyOp::PBO_None);	
+		ACBWeapon* SpawnedWeapon = GetWorld()->SpawnActor<ACBWeapon>(WeaponClass, Params);
+		
+		//add spawned weapon to owned weapons array
+		int32 Index = Weapons.Add(SpawnedWeapon);
+		if(Index == CurrentIndex)
+		{
+			EquipWeapon(SpawnedWeapon);
+		}
+	}
 }
 
 // Called every frame
@@ -120,6 +105,9 @@ void ACBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		//bind fire using callback
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ACBCharacter::FireWeapon);
+
+		//bind switch weapon using callback
+		EnhancedInputComponent->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &ACBCharacter::SwitchWeapon);
 
 	}
 }
@@ -268,3 +256,41 @@ void ACBCharacter::FireWeapon()
 	AddControllerPitchInput(-RecoilForce);
 }
 
+void ACBCharacter::EquipWeapon(ACBWeapon* NewWeapon)
+{
+	if(!NewWeapon) return;
+
+	//unequip current weapon(old weapon)
+	if(CurrentWeapon)
+	{
+		CurrentWeapon->Mesh->SetVisibility(false);
+		CurrentWeapon->SetActorEnableCollision(false);
+	}
+
+	//equip new weapon
+	CurrentWeapon = NewWeapon;
+
+	const FTransform& PlacementTransform = CurrentWeapon->PlacementTransform * GetMesh()->GetSocketTransform(FName("HandGrip_R"));
+	CurrentWeapon->SetActorTransform(PlacementTransform, false, nullptr, ETeleportType::TeleportPhysics);
+	CurrentWeapon->AttachToComponent(
+		GetMesh(),
+		FAttachmentTransformRules::KeepWorldTransform,
+		FName("HandGrip_R")
+	);
+
+	CurrentWeapon->Mesh->SetVisibility(true);
+	CurrentWeapon->SetActorEnableCollision(true);
+}
+
+void ACBCharacter::SwitchWeapon(const FInputActionValue& Value)
+{
+	if(Weapons.Num() <= 1) return;
+	
+	const float ScrollValue = Value.Get<float>();
+	if(FMath::IsNearlyZero(ScrollValue)) return;
+
+	const int32 Direction = (ScrollValue > 0.f) ? 1 : -1;
+	CurrentIndex = (CurrentIndex + Direction + Weapons.Num()) % Weapons.Num();
+
+	EquipWeapon(Weapons[CurrentIndex]);
+}

@@ -11,7 +11,7 @@ class UAnimBlueprint;
 class UInputAction;
 class UInputMappingContext;
 class UCameraComponent;
-
+class ACBWeapon;
 
 UCLASS()
 class CLANKBUSTER_API ACBCharacter : public ACharacter
@@ -48,6 +48,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* SwitchWeaponAction;
+	
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -55,6 +59,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	
 	//---------FIRST PERSON CAMERA---------//
 	//First person Camera component:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -68,21 +73,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	float FirstPersonViewScale = 0.6f;
-
-	//first person mesh visible only to the owning player
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-	USkeletalMeshComponent* FirstPersonMeshComponent;
 	//-------------------------------------//
-
-
-	//---------ANIMATIONS---------//
-	//First person default/idle animation:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation|idle")
-	UAnimBlueprint* FirstPersonDefaultAnim;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation|idle")
-	UAnimBlueprint* CharacterMeshDefaultAnim;
-	//----------------------------//
 
 
 	//Dash config:
@@ -117,7 +108,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Weapon")
 	float RecoilForce = 0.5f;  //kickback angle for camera.
 
-
 protected:
 
 	//Input callbacks:
@@ -134,5 +124,27 @@ protected:
 
 	//Fire weapon callback:
 	void FireWeapon();
+
+	//switch weapon callback:
+	void SwitchWeapon(const FInputActionValue& Value);
+
+
+// NEW WEAPON SYSTEM:
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Configurations")
+	TArray<TSubclassOf<ACBWeapon>> DefaultWeaponClasses;
+
+public:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "Weapons")
+	TArray<ACBWeapon*> Weapons; //array of owned weapons
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "Weapons")
+	ACBWeapon* CurrentWeapon;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "Weapons")
+	int32 CurrentIndex = 0;
+
+protected:
+	void EquipWeapon(ACBWeapon* NewWeapon);
 
 };

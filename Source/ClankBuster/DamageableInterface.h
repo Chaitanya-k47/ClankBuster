@@ -23,7 +23,8 @@ class CLANKBUSTER_API IDamageableInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	// "= 0" means this is a pure virtual function.
-	// any class that implements this interface must define this function.
+	//"= 0" means this is a pure virtual function.
+	//any class that implements this interface must define this function.
+	//hence this class is abstract
 	virtual void ReactToHit(float DamageAmount, const FVector& HitImpulse) = 0;
 };
