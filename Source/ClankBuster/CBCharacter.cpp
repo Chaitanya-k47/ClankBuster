@@ -265,6 +265,7 @@ void ACBCharacter::EquipWeapon(ACBWeapon* NewWeapon)
 	{
 		CurrentWeapon->Mesh->SetVisibility(false);
 		CurrentWeapon->SetActorEnableCollision(false);
+		CurrentWeapon->bIsEquipped = false;
 	}
 
 	//equip new weapon
@@ -280,6 +281,7 @@ void ACBCharacter::EquipWeapon(ACBWeapon* NewWeapon)
 
 	CurrentWeapon->Mesh->SetVisibility(true);
 	CurrentWeapon->SetActorEnableCollision(true);
+	CurrentWeapon->bIsEquipped = true;
 }
 
 void ACBCharacter::SwitchWeapon(const FInputActionValue& Value)

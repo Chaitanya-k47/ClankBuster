@@ -26,6 +26,12 @@ ACBWeapon::ACBWeapon()
 void ACBWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(!CurrentOwner && !bIsEquipped)
+	{
+		Mesh->SetVisibility(false);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 // Called every frame

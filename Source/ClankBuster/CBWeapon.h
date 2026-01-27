@@ -54,9 +54,16 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "State")
 	ACBCharacter* CurrentOwner;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "State")
+	bool bIsEquipped = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configurations")
 	FIKProperties IKProperties;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configurations")
 	FTransform PlacementTransform;
+
+private:
+	
+
 };
