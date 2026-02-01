@@ -39,11 +39,11 @@ protected:
 	virtual void Die();
 
 	//----- HYBRID HOOKS FOR VARIANTS -----
-	UFUNCTION(BlueprintNativeEvent, Category = "Combat")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Combat")
 	void OnHit(float DamageAmount); //blueprint overridable
 	virtual void OnHit_Implementation(float DamageAmount); //C++ default implementation
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Combat")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Combat")
 	void OnDeath(); //blueprint overridable
 	virtual void OnDeath_Implementation(); //C++ default implementation
 

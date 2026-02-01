@@ -41,3 +41,8 @@ void ACBWeapon::Tick(float DeltaTime)
 
 }
 
+FTransform ACBWeapon::GetSightsWorldTransform_Implementation() const
+{
+	return Mesh->GetSocketTransform(FName("Sight"));
+}
+

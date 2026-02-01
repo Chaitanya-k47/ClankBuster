@@ -13,6 +13,8 @@ class UInputMappingContext;
 class UCameraComponent;
 class ACBWeapon;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCurrentWeaponChangedDelegate, ACBWeapon*, CurrentWeapon, const ACBWeapon*, OldWeapon);
+
 UCLASS()
 class CLANKBUSTER_API ACBCharacter : public ACharacter
 {
@@ -144,7 +146,12 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "Weapons")
 	int32 CurrentIndex = 0;
 
-protected:
-	void EquipWeapon(ACBWeapon* NewWeapon);
+	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	virtual void EquipWeapon(ACBWeapon* NewWeapon);	
+
+	//called whenever current weapon in changed.
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FCurrentWeaponChangedDelegate OnCurrentWeaponChanged;
+	
 
 };

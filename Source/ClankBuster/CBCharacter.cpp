@@ -260,12 +260,15 @@ void ACBCharacter::EquipWeapon(ACBWeapon* NewWeapon)
 {
 	if(!NewWeapon) return;
 
-	//unequip current weapon(old weapon)
+	ACBWeapon* OldWeapon = nullptr;
+
+	//unequip current weapon
 	if(CurrentWeapon)
 	{
 		CurrentWeapon->Mesh->SetVisibility(false);
 		CurrentWeapon->SetActorEnableCollision(false);
 		CurrentWeapon->bIsEquipped = false;
+		OldWeapon = CurrentWeapon;
 	}
 
 	//equip new weapon
@@ -282,6 +285,9 @@ void ACBCharacter::EquipWeapon(ACBWeapon* NewWeapon)
 	CurrentWeapon->Mesh->SetVisibility(true);
 	CurrentWeapon->SetActorEnableCollision(true);
 	CurrentWeapon->bIsEquipped = true;
+
+	//broadcast weapon change event using delegate
+	OnCurrentWeaponChanged.Broadcast(CurrentWeapon, OldWeapon);
 }
 
 void ACBCharacter::SwitchWeapon(const FInputActionValue& Value)

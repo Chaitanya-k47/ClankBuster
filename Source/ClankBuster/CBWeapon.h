@@ -63,6 +63,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configurations")
 	FTransform PlacementTransform;
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "IK")
+	FTransform GetSightsWorldTransform() const; //blueprint overridable
+	virtual FTransform GetSightsWorldTransform_Implementation() const; //C++ default implementation
+
 private:
 	
 
