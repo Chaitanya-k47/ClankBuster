@@ -21,20 +21,22 @@
 ACBCharacter::ACBCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	GetMesh()->SetTickGroup(ETickingGroup::TG_PostUpdateWork);
 
 	//create a first person camera:
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	check(FirstPersonCameraComponent != nullptr);
 	FirstPersonCameraComponent->SetupAttachment(GetMesh(), FName("headSocket"));
-	FirstPersonCameraComponent->SetRelativeLocationAndRotation(FirstPersonCameraOffset, FRotator(0.0f, 90.f, -90.f));
+	//FirstPersonCameraComponent->SetRelativeLocationAndRotation(FirstPersonCameraOffset, FRotator(0.0f, 90.f, -90.f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	//enable fp rendering on camera and set default FOV and scale values:
-	FirstPersonCameraComponent->bEnableFirstPersonFieldOfView = true;
-	FirstPersonCameraComponent->bEnableFirstPersonScale = true;
-	FirstPersonCameraComponent->FirstPersonFieldOfView = FirstPersonFOV;
-	FirstPersonCameraComponent->FirstPersonScale = FirstPersonViewScale;
+	// FirstPersonCameraComponent->bEnableFirstPersonFieldOfView = true;
+	// FirstPersonCameraComponent->bEnableFirstPersonScale = true;
+	// FirstPersonCameraComponent->FirstPersonFieldOfView = FirstPersonFOV;
+	// FirstPersonCameraComponent->FirstPersonScale = FirstPersonViewScale;
 }
 
 // Called when the game starts or when spawned

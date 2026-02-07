@@ -26,7 +26,9 @@ protected:
 	virtual void NativeBeginPlay() override; //beginplay override for animation instance
 	virtual void NativeUpdateAnimation (float DeltaSeconds) override; //tick override for animation instance
 
+	UFUNCTION()
 	virtual void CurrentWeaponChanged(ACBWeapon* NewWeapon, const ACBWeapon* OldWeapon);
+	
 	virtual void SetVariables(const float DeltaSeconds);
 	virtual void CalculateWeaponSway(const float DeltaSeconds);
 

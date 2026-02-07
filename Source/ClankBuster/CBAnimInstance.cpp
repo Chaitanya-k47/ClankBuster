@@ -16,13 +16,13 @@ void UCBAnimInstance::NativeBeginPlay()
 {
     Super::NativeBeginPlay();
 
-    Character = Cast<ACBCharacter>(TryGetPawnOwner());
-    if(Character)
-    {
-        CharacterMesh = Character->GetMesh();
-        Character->OnCurrentWeaponChanged.AddDynamic(this, &UCBAnimInstance::CurrentWeaponChanged);
-        CurrentWeaponChanged(Character->CurrentWeapon, nullptr);
-    }
+    // Character = Cast<ACBCharacter>(TryGetPawnOwner());
+    // if(Character)
+    // {
+    //     CharacterMesh = Character->GetMesh();
+    //     Character->OnCurrentWeaponChanged.AddDynamic(this, &UCBAnimInstance::CurrentWeaponChanged);
+    //     CurrentWeaponChanged(Character->CurrentWeapon, nullptr);
+    // }
 
 }
 
@@ -30,7 +30,17 @@ void UCBAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
     Super::NativeUpdateAnimation(DeltaSeconds);
 
-    if(!Character) return;
+    if(!Character)
+    {
+        Character = Cast<ACBCharacter>(TryGetPawnOwner());
+        if(Character)
+        {
+            CharacterMesh = Character->GetMesh();
+            Character->OnCurrentWeaponChanged.AddDynamic(this, &UCBAnimInstance::CurrentWeaponChanged);
+            CurrentWeaponChanged(Character->CurrentWeapon, nullptr);
+        }
+        else return;
+    }
 
     SetVariables(DeltaSeconds);
     CalculateWeaponSway(DeltaSeconds);
