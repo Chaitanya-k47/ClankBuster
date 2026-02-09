@@ -42,6 +42,9 @@ void UCBAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         else return;
     }
 
+    // float TargetAlpha = Character->bIsAiming ? 1.0f : 0.0f;
+    // ADSAlpha = FMath::FInterpTo(ADSAlpha, TargetAlpha, DeltaSeconds, ADSSpeed);
+
     SetVariables(DeltaSeconds);
     CalculateWeaponSway(DeltaSeconds);
 

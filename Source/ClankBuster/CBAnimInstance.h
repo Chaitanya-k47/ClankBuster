@@ -60,4 +60,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	FTransform RHandToSightTransform;
 
+	//ANIMATION INTERPOLATION:
+	//the Alpha value (0.0 = Hip, 1.0 = ADS)
+	// UPROPERTY(BlueprintReadOnly, Category = "Animation")
+	// float ADSAlpha = 0.0f;
+
+	// UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	// float ADSSpeed = 20.0f;
 };

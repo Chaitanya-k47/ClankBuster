@@ -33,10 +33,10 @@ ACBCharacter::ACBCharacter()
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	//enable fp rendering on camera and set default FOV and scale values:
-	// FirstPersonCameraComponent->bEnableFirstPersonFieldOfView = true;
-	// FirstPersonCameraComponent->bEnableFirstPersonScale = true;
-	// FirstPersonCameraComponent->FirstPersonFieldOfView = FirstPersonFOV;
-	// FirstPersonCameraComponent->FirstPersonScale = FirstPersonViewScale;
+	FirstPersonCameraComponent->bEnableFirstPersonFieldOfView = true;
+	FirstPersonCameraComponent->bEnableFirstPersonScale = true;
+	FirstPersonCameraComponent->FirstPersonFieldOfView = FirstPersonFOV;
+	FirstPersonCameraComponent->FirstPersonScale = FirstPersonViewScale;
 }
 
 // Called when the game starts or when spawned
@@ -111,6 +111,10 @@ void ACBCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		//bind switch weapon using callback
 		EnhancedInputComponent->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &ACBCharacter::SwitchWeapon);
 
+		//bind aim using callbacks
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &ACBCharacter::StartAiming);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &ACBCharacter::StopAiming);
+		
 	}
 }
 
@@ -303,4 +307,14 @@ void ACBCharacter::SwitchWeapon(const FInputActionValue& Value)
 	CurrentIndex = (CurrentIndex + Direction + Weapons.Num()) % Weapons.Num();
 
 	EquipWeapon(Weapons[CurrentIndex]);
+}
+
+void ACBCharacter::StartAiming()
+{
+	bIsAiming = true;
+}
+
+void ACBCharacter::StopAiming()
+{
+	bIsAiming = false;
 }

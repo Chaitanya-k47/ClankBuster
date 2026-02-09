@@ -53,6 +53,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* SwitchWeaponAction;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* AimAction;
 
 public:	
 	// Called every frame
@@ -130,6 +132,9 @@ protected:
 	//switch weapon callback:
 	void SwitchWeapon(const FInputActionValue& Value);
 
+	//Aim callback:
+	void StartAiming();
+	void StopAiming();
 
 // NEW WEAPON SYSTEM:
 protected:
@@ -146,12 +151,14 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "Weapons")
 	int32 CurrentIndex = 0;
 
-	UFUNCTION(BlueprintCallable, Category = "Weapons")
-	virtual void EquipWeapon(ACBWeapon* NewWeapon);	
-
 	//called whenever current weapon in changed.
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FCurrentWeaponChangedDelegate OnCurrentWeaponChanged;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	bool bIsAiming = false;
+
+	UFUNCTION(BlueprintCallable, Category = "Weapons")
+	virtual void EquipWeapon(ACBWeapon* NewWeapon);
 
 };
