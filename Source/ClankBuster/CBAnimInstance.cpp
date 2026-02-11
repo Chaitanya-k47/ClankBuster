@@ -73,6 +73,10 @@ void UCBAnimInstance::SetVariables(const float DeltaSeconds)
     //camera relative to hands root
     RelativeCameraTransform = CameraTransform.GetRelativeTransform(RootOffset);
 
+    // //new logic testing:
+    // FTransform MeshTransform = CharacterMesh->GetComponentTransform();
+    // RelativeCameraTransform = CameraTransform.GetRelativeTransform(MeshTransform);
+
 }
 
 void UCBAnimInstance::CalculateWeaponSway(const float DeltaSeconds)
