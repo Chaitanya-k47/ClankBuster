@@ -70,13 +70,7 @@ public:
 	UCameraComponent* FirstPersonCameraComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
-	FVector FirstPersonCameraOffset = FVector(2.8f, 5.9f, 0.0f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
-	float FirstPersonFOV = 70.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
-	float FirstPersonViewScale = 0.6f;
+	float FirstPersonFOV = 100.f;
 	//-------------------------------------//
 
 
@@ -111,6 +105,22 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Weapon")
 	float RecoilForce = 0.5f;  //kickback angle for camera.
+
+
+	//Zoom/aim config:
+	UPROPERTY(EditAnywhere, Category = "Combat|Zoom")
+	float DefaultFOV = 100.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat|Zoom")
+	float ZoomedFOV = 50.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat|Zoom")
+	float ZoomInterpSpeed = 20.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	bool bIsAiming = false;
+
+	float CurrentTargetFOV;
 
 protected:
 
@@ -154,9 +164,6 @@ public:
 	//called whenever current weapon in changed.
 	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FCurrentWeaponChangedDelegate OnCurrentWeaponChanged;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
-	bool bIsAiming = false;
 
 	UFUNCTION(BlueprintCallable, Category = "Weapons")
 	virtual void EquipWeapon(ACBWeapon* NewWeapon);

@@ -21,7 +21,7 @@
 ACBCharacter::ACBCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	GetMesh()->SetTickGroup(ETickingGroup::TG_PostUpdateWork);
 
@@ -29,14 +29,9 @@ ACBCharacter::ACBCharacter()
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	check(FirstPersonCameraComponent != nullptr);
 	FirstPersonCameraComponent->SetupAttachment(GetMesh(), FName("headSocket"));
-	//FirstPersonCameraComponent->SetRelativeLocationAndRotation(FirstPersonCameraOffset, FRotator(0.0f, 90.f, -90.f));
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+	FirstPersonCameraComponent->FieldOfView = FirstPersonFOV;
 
-	//enable fp rendering on camera and set default FOV and scale values:
-	FirstPersonCameraComponent->bEnableFirstPersonFieldOfView = true;
-	FirstPersonCameraComponent->bEnableFirstPersonScale = true;
-	FirstPersonCameraComponent->FirstPersonFieldOfView = FirstPersonFOV;
-	FirstPersonCameraComponent->FirstPersonScale = FirstPersonViewScale;
 }
 
 // Called when the game starts or when spawned
@@ -54,6 +49,12 @@ void ACBCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+
+	if(FirstPersonCameraComponent)
+	{
+		DefaultFOV = FirstPersonCameraComponent->FieldOfView;
+		CurrentTargetFOV = DefaultFOV;
 	}
 
 	//weapon spawning:
@@ -79,6 +80,13 @@ void ACBCharacter::BeginPlay()
 void ACBCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(FirstPersonCameraComponent)
+	{
+		float CurrentFOV = FirstPersonCameraComponent->FieldOfView;
+		float NewFOV = FMath::FInterpTo(CurrentFOV, CurrentTargetFOV, DeltaTime, ZoomInterpSpeed);
+		FirstPersonCameraComponent->SetFieldOfView(NewFOV);
+	}
 
 }
 
@@ -312,9 +320,11 @@ void ACBCharacter::SwitchWeapon(const FInputActionValue& Value)
 void ACBCharacter::StartAiming()
 {
 	bIsAiming = true;
+	CurrentTargetFOV = ZoomedFOV;
 }
 
 void ACBCharacter::StopAiming()
 {
 	bIsAiming = false;
+	CurrentTargetFOV = DefaultFOV;
 }
